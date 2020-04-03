@@ -1,0 +1,712 @@
+需要掌握的内容：
+
+- java.io.InputStream  字节输入流
+- java.io.OutputStream 字节输出流
+- java.io.Reader		字符输入流
+- java.io.Writer		字符输出流
+  - 文件专属
+    - java.io.FileInputStream（掌握）
+    - java.io.FileOutputStream（掌握）
+    - java.io.FileReader
+    - java.io.FileWriter
+  - 转换流
+    - java.io.InputStreamReader
+    - java.io.OutputStreamWriter
+  - 缓冲流专属
+    - java.io.BufferedReader
+    - java.io.BufferedWriter
+    - java.io.BufferedInputStream
+    - java.io.BufferedOutputStream
+  - 数据流专属
+    - java.io.DataInputStream
+    - java.io.DataOutputStream
+  - 标准输出流
+    - java.io.PrintWriter
+    - java.io.PrintStream（掌握）
+  - 对象专属流
+    - java.io.ObjectInputStream（掌握）
+    - java.io.ObjectOutputStream（掌握）
+- java.io.File类
+- IO流+Properties集合的联合使用
+
+
+
+
+
+1、IO流：
+
+------
+
+1、IO流，什么是IO？
+		I : Input
+		O : Output
+		通过IO可以完成硬盘文件的读和写。
+
+
+
+2、IO流的分类：
+
+​	有多种分类方式：
+
+​		一种方式是按照流的方向进行分类：
+​			以内存作为参照物：
+​				往内存中去，叫做输入(Input)。或者叫做读(Read)。
+​				从内存中出来，叫做输出(Output)。或者叫做写(Write)。
+
+​		另一种方式是按照读取数据方式不同进行分类：
+​			有的流是按照字节的方式读取数据，一次读取1个字节byte，等同于一次读取8个二进制位。
+​			这种流是万能的，什么类型的文件都可以读取。包括：文本文件，图片，声音文件，视频文件等....
+​				假设文件file1.txt，采用字节流的话是这样读的：
+​					中国bc张三fe
+​					第一次读：一个字节，正好读到'a'
+​					第二次读：一个字节，正好读到'中'字符的一半。
+​					第三次读：一个字节，正好读到'中'字符的另外一半。
+
+​			有的流是按照字符的方式读取数据的，一次读取一个字符，这种流是为了方便读取
+​			普通文本文件而存在的，这种流不能读取：图片、声音、视频等文件。只能读取纯
+​			文本文件，连word文件都无法读取。
+​				假设文件file1.txt，采用字符流的话是这样读的：
+​					a中国bc张三fe
+​					第一次读：'a'字符（'a'字符在windows系统中占用1个字节。）
+​					第二次读：'中'字符（'中'字符在windows系统中占用2个字节。）
+
+​	综上所述：流的分类
+​		输入流、输出流
+​		字节流、字符流
+
+
+
+3、Java中的IO流都已经写好了，我们程序员不需要关心,我们最主要还是掌握，
+在java中已经提供了哪些流，每个流的特点是什么，每个流对象上的常用方法有
+哪些？
+	java中所有的流都是在：java.io.*;下。
+
+​	java中主要还是研究：
+​		怎么new流对象。
+​		调用流对象的哪个方法是读，哪个方法是写。
+
+
+
+4、java IO流这块有四大家族：
+	四大家族的首领：
+		java.io.InputStream  字节输入流
+		java.io.OutputStream 字节输出流
+
+​		java.io.Reader		字符输入流
+​		java.io.Writer		字符输出流
+
+​		四大家族的首领都是抽象类。(abstract class)
+
+​		所有的流都实现了：
+​			java.io.Closeable接口，都是可关闭的，都有close()方法。
+​			流毕竟是一个管道，这个是内存和硬盘之间的通道，用完之后一定要关闭，
+​			不然会耗费(占用)很多资源。养成好习惯，用完流一定要关闭。
+
+​		所有的输出流都实现了：
+​			java.io.Flushable接口，都是可刷新的，都有flush()方法。
+​			养成一个好习惯，输出流在最终输出之后，一定要记得flush()
+​			刷新一下。这个刷新表示将通道/管道当中剩余未输出的数据
+​			强行输出完（清空管道！）刷新的作用就是清空管道。
+​			注意：如果没有flush()可能会导致丢失数据。
+
+​	注意：在java中只要“类名”以Stream结尾的都是字节流。以“Reader/Writer”结尾的都是字符流。
+
+
+
+5、java.io包下需要掌握的流有16个：
+
+​	文件专属：
+​		java.io.FileInputStream（掌握）
+​		java.io.FileOutputStream（掌握）
+​		java.io.FileReader
+​		java.io.FileWriter
+
+​	转换流：（将字节流转换成字符流）
+​		java.io.InputStreamReader
+​		java.io.OutputStreamWriter
+
+​	缓冲流专属：
+​		java.io.BufferedReader
+​		java.io.BufferedWriter
+​		java.io.BufferedInputStream
+​		java.io.BufferedOutputStream
+
+​	数据流专属：
+​		java.io.DataInputStream
+​		java.io.DataOutputStream
+
+​	标准输出流：
+​		java.io.PrintWriter
+​		java.io.PrintStream（掌握）
+
+​	对象专属流：
+​		java.io.ObjectInputStream（掌握）
+​		java.io.ObjectOutputStream（掌握）
+
+
+
+6、流的书写模板（以FileInputStream为例）：
+
+```java
+    try {
+        fis = new FileInputStream("chapter23/src/tempfile3");
+        // 准备一个byte数组
+        byte[] bytes = new byte[4];
+        /*while(true){
+                    int readCount = fis.read(bytes);
+                    if(readCount == -1){
+                        break;
+                    }
+                    // 把byte数组转换成字符串，读到多少个转换多少个。
+                    System.out.print(new String(bytes, 0, readCount));
+                }*/
+
+        int readCount = 0;
+        while((readCount = fis.read(bytes)) != -1) {
+            System.out.print(new String(bytes, 0, readCount));
+        }
+
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        if (fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+```
+
+
+
+7、java.io.FileInputStream：
+
+​	7.1、文件字节输入流，万能的，任何类型的文件都可以采用这个流来读。
+​	7.2、字节的方式，完成输入的操作，完成读的操作（硬盘---> 内存）
+​	7.3、若已经读到文件的末尾了，再读的时候读取不到任何数据，返回-1
+
+​	7.4、一次读取多个字节：
+
+```java
+int readData = 0;
+while((readData = fis.read()) != -1){
+    System.out.println(readData);
+}
+```
+
+7.5、int read(byte[] b)
+	一次最多读取 b.length 个字节。
+	减少硬盘和内存的交互，提高程序的执行效率。
+	往byte[]数组当中读。
+
+7.6、相对路径的话呢？相对路径一定是从当前所在的位置作为起点开始找！
+          IDEA默认的当前路径是哪里？工程Project的根就是IDEA的默认当前路径。
+
+7.7、FileInputStream类的其它常用方法：
+    int available()：返回流当中剩余的没有读到的字节数量
+    long skip(long n)：跳过几个字节不读。
+
+​	测试（byte[]数组）：
+
+```java
+    FileInputStream fis = null;
+    try {
+        fis = new FileInputStream("tempfile");
+        System.out.println("总字节数量：" + fis.available());
+        // 读1个字节
+        //int readByte = fis.read();
+        // 还剩下可以读的字节数量是：5
+        //System.out.println("剩下多少个字节没有读：" + fis.available());
+        // 这个方法有什么用？
+        //byte[] bytes = new byte[fis.available()]; // 这种方式不太适合太大的文件，因为byte[]数			组不能太大。
+        // 不需要循环了。
+        // 直接读一次就行了。
+        //int readCount = fis.read(bytes); // 6
+        //System.out.println(new String(bytes)); // abcdef
+
+        // skip跳过几个字节不读取，这个方法也可能以后会用！
+        fis.skip(3);
+        System.out.println(fis.read()); //100
+
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        if (fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+```
+
+
+
+8、FileOutputStream：
+
+​	8.1、文件字节输出流，负责写。
+
+​			 从内存到硬盘。
+
+​	8.2、myfile文件不存在的时候会自动新建！
+​        	 这种方式谨慎使用，这种方式会先将原文件清空，然后重新写入。
+​        	 fos = new FileOutputStream("myfile");
+
+​			 以追加的方式在文件末尾写入。不会清空原文件内容：
+
+​			 fos = new FileOutputStream("D:/src/tempfile3", true);
+
+
+
+9、FileReader：
+
+​	9.1、文件字符输入流，只能读取普通文本。
+​			 读取文本内容时，比较方便，快捷。
+
+​	9.2、测试（char[]数组）：
+
+```java
+    FileReader reader = null;
+    try {
+        // 创建文件字符输入流
+        reader = new FileReader("tempfile");
+
+        //准备一个char数组
+        char[] chars = new char[4];
+        // 往char数组中读
+        reader.read(chars); // 按照字符的方式读取：第一次e，第二次f，第三次 风....
+        for(char c : chars) {
+            System.out.println(c);
+        }
+
+        /*// 开始读
+                char[] chars = new char[4]; // 一次读取4个字符
+                int readCount = 0;
+                while((readCount = reader.read(chars)) != -1) {
+                    System.out.print(new String(chars,0,readCount));
+                }*/
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+```
+
+
+
+10、FileWriter:
+    10.1、文件字符输出流。写。
+    			只能输出普通文本。
+
+​	10.2、测试：
+
+```java
+    FileWriter out = null;
+    try {
+        // 创建文件字符输出流对象
+        //out = new FileWriter("file");
+        out = new FileWriter("file", true);
+
+        // 开始写。
+        char[] chars = {'我','是','中','国','人'};
+        out.write(chars);
+        out.write(chars, 2, 3);
+
+        out.write("我是一名java软件工程师！");
+        // 写出一个换行符。
+        out.write("\n");
+        out.write("hello world!");
+
+        // 刷新
+        out.flush();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+```
+
+
+
+11、ObjectOutputStream：
+
+​	11.1、1、java.io.NotSerializableException:
+​	Student对象不支持序列化！！！！
+
+​	11.2、参与序列化和反序列化的对象，必须实现Serializable接口。
+
+​	11.3、注意：通过源代码发现，Serializable接口只是一个标志接口：
+​    	public interface Serializable {
+​    	}
+​    	这个接口当中什么代码都没有。
+​    	那么它起到一个什么作用呢？
+​        	起到标识的作用，标志的作用，java虚拟机看到这个类实现了这个接口，可能会对这个类进行特殊待遇。
+​        	Serializable这个标志接口是给java虚拟机参考的，java虚拟机看到这个接口之后，会为该类自动生成
+​        	一个序列化版本号。
+
+​	11.4、序列化版本号有什么用呢？
+​    	java.io.InvalidClassException:
+​        	com.bjpowernode.java.bean.Student;
+​        	local class incompatible:
+​            	stream classdesc serialVersionUID = -684255398724514298（十年后）,
+​            	local class serialVersionUID = -3463447116624555755（十年前）
+
+​	java语言中是采用什么机制来区分类的？
+​    	第一：首先通过类名进行比对，如果类名不一样，肯定不是同一个类。
+​    	第二：如果类名一样，再怎么进行类的区别？靠序列化版本号进行区分。
+
+​	小明编写了一个类：com.bjpowernode.java.bean.Student implements Serializable
+​	小红编写了一个类：com.bjpowernode.java.bean.Student implements Serializable
+​	不同的人编写了同一个类，但“这两个类确实不是同一个类”。这个时候序列化版本就起上作用了。
+​	对于java虚拟机来说，java虚拟机是可以区分开这两个类的，因为这两个类都实现了Serializable接口，
+​	都有默认的序列化版本号，他们的序列化版本号不一样。所以区分开了（这是自动生成序列化版本号的好处）
+
+​	请思考？
+​    	这种自动生成序列化版本号有什么缺陷？
+​        	这种自动生成的序列化版本号缺点是：一旦代码确定之后，不能进行后续的修改，
+​        	因为只要修改，必然会重新编译，此时会生成全新的序列化版本号，这个时候java
+​        	虚拟机会认为这是一个全新的类。（这样就不好了！）
+
+​	最终结论：
+​    	凡是一个类实现了Serializable接口，建议给该类提供一个固定不变的序列化版本号。
+​    	这样，以后这个类即使代码修改了，但是版本号不变，java虚拟机会认为是同一个类。
+
+​	11.5、一次序列化多个对象呢？
+​	可以，可以将对象放到集合当中，序列化集合。
+
+​	提示：
+​    	参与序列化的ArrayList集合以及集合中的元素User都需要实现 java.io.Serializable接口。
+
+```java
+public class ObjectOutputStreamTest02 {
+    public static void main(String[] args) throws Exception{
+        List<User> userList = new ArrayList<>();
+        userList.add(new User(1,"zhangsan"));
+        userList.add(new User(2, "lisi"));
+        userList.add(new User(3, "wangwu"));
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("users"));
+
+        // 序列化一个集合，这个集合对象中放了很多其他对象。
+        oos.writeObject(userList);
+
+        oos.flush();
+        oos.close();
+    }
+}
+```
+
+​	11.6反序列化集合：
+
+```java
+public class ObjectInputStreamTest02 {
+    public static void main(String[] args) throws Exception{
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream("users"));
+        //Object obj = ois.readObject();
+        //System.out.println(obj instanceof List);
+        List<User> userList = (List<User>)ois.readObject();
+        for(User user : userList){
+            System.out.println(user);
+        }
+        ois.close();
+    }
+}
+```
+
+
+
+12、BufferedReader:
+    12.1、带有缓冲区的字符输入流。
+    			使用这个流的时候不需要自定义char数组，或者说不需要自定义byte数组。自带缓冲。
+
+```java
+    FileReader reader = new FileReader("Copy02.java");
+    // 当一个流的构造方法中需要一个流的时候，这个被传进来的流叫做：节点流。
+    // 外部负责包装的这个流，叫做：包装流，还有一个名字叫做：处理流。
+    // 像当前这个程序来说：FileReader就是一个节点流。BufferedReader就是包装流/处理流。
+    BufferedReader br = new BufferedReader(reader);
+
+    // 读一行
+    /*String firstLine = br.readLine();
+            System.out.println(firstLine);
+
+            String secondLine = br.readLine();
+            System.out.println(secondLine);
+
+            String line3 = br.readLine();
+            System.out.println(line3);*/
+
+    // br.readLine()方法读取一个文本行，但不带换行符。
+    String s = null;
+    while((s = br.readLine()) != null){
+        System.out.print(s);
+    }
+
+    // 关闭流
+    // 对于包装流来说，只需要关闭最外层流就行，里面的节点流会自动关闭。（可以看源代码。）
+    br.close();
+```
+
+```java
+    /*// 字节流
+            FileInputStream in = new FileInputStream("Copy02.java");
+
+            // 通过转换流转换（InputStreamReader将字节流转换成字符流。）
+            // in是节点流。reader是包装流。
+            InputStreamReader reader = new InputStreamReader(in);
+
+            // 这个构造方法只能传一个字符流。不能传字节流。
+            // reader是节点流。br是包装流。
+            BufferedReader br = new BufferedReader(reader);*/
+
+    // 合并
+    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Copy02.java")));
+
+    String line = null;
+    while((line = br.readLine()) != null){
+        System.out.println(line);
+    }
+
+    // 关闭最外层
+    br.close();
+```
+
+​	12.2、BufferedWriter：带有缓冲的字符输出流。
+​				OutputStreamWriter：转换流
+
+
+
+13、DataInputStream：
+
+​	13.1、数据字节输入流
+
+​	13.2、DataOutputStream写的文件，只能使用DataInputStream去读。并且读的时候你需要提前知道写入的顺	序。
+
+​	读的顺序需要和写的顺序一致。才可以正常取出数据。
+
+
+
+14、DataOutputStream：
+
+​	14.1、这个流可以将数据连同数据的类型一并写入文件。
+​				注意：这个文件不是普通文本文档。（这个文件使用记事本打不开。）
+
+
+
+15、PrintStream：
+
+​	15.1、标准的字节输出流。默认输出到控制台
+
+```java
+    // 联合起来写
+    System.out.println("hello world!");
+
+    // 分开写
+    PrintStream ps = System.out;
+    ps.println("hello zhangsan");
+    ps.println("hello lisi");
+    ps.println("hello wangwu");
+
+    // 标准输出流不需要手动close()关闭。
+    // 可以改变标准输出流的输出方向吗？ 可以
+    /*
+            // 这些是之前System类使用过的方法和属性。
+            System.gc();
+            System.currentTimeMillis();
+            PrintStream ps2 = System.out;
+            System.exit(0);
+            System.arraycopy(....);
+             */
+
+    // 标准输出流不再指向控制台，指向“log”文件。
+    PrintStream printStream = new PrintStream(new FileOutputStream("log"));
+    // 修改输出方向，将输出方向修改到"log"文件。
+    System.setOut(printStream);
+    // 再输出
+    System.out.println("hello world");
+    System.out.println("hello kitty");
+    System.out.println("hello zhangsan");
+```
+
+
+
+16、File：
+
+​	16.1、File类和四大家族没有关系，所以File类不能完成文件的读和写。
+​	16.2、File对象代表什么？
+   	 文件和目录路径名的抽象表示形式。
+​    	C:\Drivers 这是一个File对象
+​    	C:\Drivers\Lan\Realtek\Readme.txt 也是File对象。
+​    	一个File对象有可能对应的是目录，也可能是文件。
+​    	File只是一个路径名的抽象表示形式。
+​	16.3、需要掌握File类中常用的方法
+
+```java
+    // 创建一个File对象
+    File f1 = new File("D:\\file");
+
+    // 判断是否存在！
+    System.out.println(f1.exists());
+
+    // 如果D:\file不存在，则以文件的形式创建出来
+    /*if(!f1.exists()) {
+                    // 以文件形式新建
+                    f1.createNewFile();
+                }*/
+
+    // 如果D:\file不存在，则以目录的形式创建出来
+    /*if(!f1.exists()) {
+                    // 以目录的形式新建。
+                    f1.mkdir();
+                }*/
+
+    // 可以创建多重目录吗？
+    File f2 = new File("D:/a/b/c/d/e/f");
+    /*if(!f2.exists()) {
+                    // 多重目录的形式新建。
+                    f2.mkdirs();
+                }*/
+
+    File f3 = new File("D:\\course\\01-开课\\学习方法.txt");
+    // 获取文件的父路径
+    String parentPath = f3.getParent();
+    System.out.println(parentPath); //D:\course\01-开课
+    File parentFile = f3.getParentFile();
+    System.out.println("获取绝对路径：" + parentFile.getAbsolutePath());
+
+    File f4 = new File("copy");
+    System.out.println("绝对路径：" + f4.getAbsolutePath()); // C:\Users\Administrator\IdeaProjects\javase\copy
+```
+
+​	16.4、File类的常用方法：
+
+```java
+    File f1 = new File("D:\\course\\01-开课\\开学典礼.ppt");
+    // 获取文件名
+    System.out.println("文件名：" + f1.getName());
+
+    // 判断是否是一个目录
+    System.out.println(f1.isDirectory()); // false
+
+    // 判断是否是一个文件
+    System.out.println(f1.isFile()); // true
+
+    // 获取文件最后一次修改时间
+    long haoMiao = f1.lastModified(); // 这个毫秒是从1970年到现在的总毫秒数。
+    // 将总毫秒数转换成日期?????
+    Date time = new Date(haoMiao);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+    String strTime = sdf.format(time);
+    System.out.println(strTime);
+
+    // 获取文件大小
+    System.out.println(f1.length()); //216064字节。
+```
+
+​	16.5、File中的listFiles方法：
+
+```java
+    // File[] listFiles()
+    // 获取当前目录下所有的子文件。
+    File f = new File("D:\\course\\01-开课");
+    File[] files = f.listFiles();
+    // foreach
+    for(File file : files){
+        //System.out.println(file.getAbsolutePath());
+        System.out.println(file.getName());
+    }
+```
+
+
+
+17、transient关键字表示游离的，不参与序列化。
+
+
+
+18、Java虚拟机看到Serializable接口之后，会自动生成一个序列化版本号。
+    	没有手动写出来，java虚拟机会默认提供这个序列化版本号。
+    	建议将序列化版本号手动的写出来。不建议自动生成
+    private static final long serialVersionUID = 1L; // java虚拟机识别一个类的时候先通过类名，如果类名一致，	再通过序列化版本号。
+
+
+
+19、IO+Properties的联合应用：
+	非常好的一个设计理念：
+    	以后经常改变的数据，可以单独写到一个文件中，使用程序动态读取。
+    	将来只需要修改这个文件的内容，java代码不需要改动，不需要重新
+    	编译，服务器也不需要重启。就可以拿到动态的信息。
+
+​	类似于以上机制的这种文件被称为配置文件。
+​	并且当配置文件中的内容格式是：
+​    	key1=value
+​    	key2=value
+​	的时候，我们把这种配置文件叫做属性配置文件。
+
+​	java规范中有要求：属性配置文件建议以.properties结尾，但这不是必须的。
+​	这种以.properties结尾的文件在java中被称为：属性配置文件。
+​	其中Properties是专门存放属性配置文件内容的一个类。
+
+```java
+    /*
+            Properties是一个Map集合，key和value都是String类型。
+            想将userinfo文件中的数据加载到Properties对象当中。
+             */
+    // 新建一个输入流对象
+    FileReader reader = new FileReader("chapter23/userinfo.properties");
+
+    // 新建一个Map集合
+    Properties pro = new Properties();
+
+    // 调用Properties对象的load方法将文件中的数据加载到Map集合中。
+    pro.load(reader); // 文件中的数据顺着管道加载到Map集合中，其中等号=左边做key，右边做value
+
+    // 通过key来获取value呢？
+    String username = pro.getProperty("username");
+    System.out.println(username);
+
+    String password = pro.getProperty("password");
+    System.out.println(password);
+
+    String data = pro.getProperty("data");
+    System.out.println(data);
+
+    String usernamex = pro.getProperty("usernamex");
+    System.out.println(usernamex);
+```
+
+
+
+20、对于配置文件：
+
+​	#建议key和value之间使用=的方式。
+​	#=左边是key，=右边是value
+​	username=admin
+​	########################在属性配置文件中井号是注释#############################
+​	#属性配置文件的key重复的话，value会自动覆盖！
+​	#password=admin123
+​	password=456456
+​	#最好不要有空格
+​	data                   =     abc
+
+​	#不建议使用:
+​	#usernamex:admin

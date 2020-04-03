@@ -1,0 +1,1334 @@
+需要掌握的点：
+
+- 集合
+
+  - java.util.Collection接口
+    - List接口
+      - ArrayList
+      - LinkedList
+      - Vector
+    - Set接口
+      - HashSet
+      - TreeSet
+  - java.util.Map接口
+    - HashMap
+    - Hashtable
+      - Properties
+    - TreeMap
+  - 迭代器Interator接口
+
+  ​	
+
+  
+
+1、集合：
+
+------
+
+1、集合概述：
+
+​	1.1、什么是集合？有什么用？
+
+​		数组其实就是一个集合。集合实际上就是一个**容器**。可以来容纳其它类型的数据。
+
+​		集合为什么说在开发中使用较多？
+​			集合是一个容器，是一个载体，可以一次容纳多个对象。
+​			在实际开发中，假设连接数据库，数据库当中有10条记录，
+​			那么假设把这10条记录查询出来，在java程序中会将10条
+​			数据封装成10个java对象，然后将10个java对象放到某一个
+​			集合当中，将集合传到前端，然后遍历集合，将一个数据一个
+​			数据展现出来。
+
+​	1.2、集合**不能**直接存储**基本数据**类型，另外集合也**不能**直接**存储**java**对象**，
+​	集合当中存储的都是java对象的**内存地址**。（或者说集合中存储的是**引用**。）
+​		list.add(100); //自动装箱Integer
+​		注意：
+​			集合在java中本身是一个容器，是一个对象。
+​			集合中任何时候存储的都是“引用”。
+
+​	1.3、在java中每一个**不同**的**集合**，**底层**会对应不同的**数据结构**。往不同的集合中
+​	存储元素，等于将数据放到了不同的数据结构当中。什么是数据结构？数据存储的
+​	结构就是数据结构。不同的数据结构，数据存储方式不同。例如：
+​		数组、二叉树、链表、哈希表...
+​		以上这些都是常见的数据结构。
+
+​		你往集合c1中放数据，可能是放到数组上了。
+​		你往集合c2中放数据，可能是放到二叉树上了。
+​		.....
+​		你使用不同的集合等同于使用了不同的数据结构。
+
+​		在java集合这一章节，你需要掌握的不是精通数据结构。java中已经将数据结构
+​		实现了，已经写好了这些常用的集合类，你只需要掌握怎么用？在什么情况下选择
+​		哪一种合适的集合去使用即可。
+
+​		new ArrayList(); 创建一个集合，底层是数组。
+​		new LinkedList(); 创建一个集合对象，底层是链表。
+​		new TreeSet(); 创建一个集合对象，底层是二叉树。
+​		.....
+
+​	1.4、**集合**在java JDK中哪个包下？
+​		java.**util**.*;
+​			所有的集合类和集合接口都在**java.util包下**。
+
+​	1.5、为了让大家掌握集合这块的内容，最好能背会集合的**继承结构图**！！！
+​		集合整个这个体系是怎样的一个结构，你需要有印象。
+
+​	1.6、在java中集合分为两大类：
+​		一类是**单个**方式存储元素：
+​			单个方式存储元素，这一类集合中**超级父接口：java.util.Collection**;
+
+​		一类是以**键值对**的方式存储元素
+​			以键值对的方式存储元素，这一类集合中**超级父接口：java.util.Map**;
+
+
+
+2、java.util.Collection接口：
+
+​	2.1、在单个方式存储元素的集合中，java.util.Collection是超级父接口，
+
+​			 其它子类都有继承和实现这个接口，所以Collection中的方法为所有其子类的公共方法。
+
+​	2.2、Collection中能存放什么元素？
+
+​			没有使用“泛型”之前，Collection中可以存储Object的所有子类型。
+​    		使用了“**泛型**”之后，Collection中只能存储某个**具体**的类型。
+​    		Collection中什么都能存，只要是Object的子类型就行。
+
+​		  （集合中不能直接存储基本数据类型，也不能存
+​    		java对象，只是存储java对象的内存地址。）
+
+​	2.3、Collection中的**常用方法**:
+
+​			**boolean add(Object e) 向集合中添加元素**
+**​    		int size()  获取集合中元素的个数**
+**​    		void clear() 清空集合**
+**​    		boolean contains(Object o) 判断当前集合中是否包含元素o，包含返回true，不包含返回false**
+**​    		boolean remove(Object o) 删除集合中的某个元素。**
+**​    		boolean isEmpty()  判断该集合中元素的个数是否为0**
+**​    		Object[] toArray()  调用这个方法可以把集合转换成数组。【作为了解，使用不多。】**
+
+​	2.4、集合**遍历/迭代**（重点：五颗星*****）：
+
+​            1、注意：以下讲解的遍历方式/迭代方式，是所有Collection**通用**的一种方式。
+​            在**Map集合中不能用**。在所有的Collection以及子类中使用。
+
+​			2、对集合Collection进行遍历/迭代
+
+​				第一步：**获取集合对象的迭代器对象Iterator**
+
+​				第二步：通过以上**获取的迭代器对象开始迭代/遍历集合**
+
+​			3、以下两个方法是迭代器对象Iterator中的方法：
+​            	**boolean hasNext()如果仍有元素可以迭代，则返回 true。**
+**​            	Object next() 返回迭代的下一个元素。**
+
+​				示例：
+
+```java
+        // 创建集合对象
+        Collection c = new ArrayList(); // 后面的集合无所谓，主要是看前面的Collection										 //	接口，怎么遍历/迭代。
+        // 添加元素
+        c.add("abc");
+        c.add("def");
+        c.add(100);
+        c.add(new Object());
+        // 对集合Collection进行遍历/迭代
+        // 第一步：获取集合对象的迭代器对象Iterator
+        Iterator it = c.iterator();
+        // 第二步：通过以上获取的迭代器对象开始迭代/遍历集合。
+        /*
+        以下两个方法是迭代器对象Iterator中的方法：
+        boolean hasNext()如果仍有元素可以迭代，则返回 true。
+        Object next() 返回迭代的下一个元素。
+        */
+        while(it.hasNext()){
+        // 存进去是什么类型，取出来还是什么类型。
+        Object obj = it.next();
+        System.out.println(obj);
+        }
+
+        // 一直取，不判断，会出现异常：java.util.NoSuchElementException
+        /*while(true){
+                    Object obj = it.next();
+                    System.out.println(obj);
+          }
+        */
+```
+
+​	2.5、深入Collection集合的contains方法和remove方法：
+
+​		contains方法：
+
+​            boolean contains(Object o)
+​            	判断集合中是否包含某个对象o
+​            	如果包含返回true， 如果不包含返回false。
+
+​        	contains方法是用来判断集合中是否包含某个元素的方法，
+​        		那么它在底层是怎么判断集合中是否包含某个元素的呢？
+​            	调用了**equals方法**进行比对。
+​            	equals方法返回true，就表示包含这个元素。
+
+​		remove方法：
+​			重点：当**集合的结构发生改变**时，**迭代器必须重新获取**，如果还是用以前老的迭代器，会出现
+​			异常：java.util.ConcurrentModificationException
+
+​			重点：在迭代集合元素的过程中，不能调用集合对象的remove方法，删除元素：
+​    		c.remove(o); 迭代过程中不能这样，会出现：java.util.ConcurrentModificationException
+
+​			重点：在**迭代元素的过程**当中，一定要**使用迭代器**Iterator**的remove方法**，删除元素，
+​			**不要使用集合自带的remove方法删除元素**。
+
+​			重点：remove方法在删除对应集合时，在其底层也是使用了equals方法进行集合元素的比对。
+
+​		结论：**存放在一个集合中的类型，一定要重写equals方法**。
+
+​		测试：**contains方法和remove方法的底层调用了equals方法**。
+
+```java
+    public static void main(String[] args) {
+        // 创建集合对象
+        Collection c = new ArrayList();
+        // 创建用户对象
+        User u1 = new User("jack");
+        // 加入集合
+        c.add(u1);
+        // 判断集合中是否包含u2
+        User u2 = new User("jack");
+        // 没有重写equals之前：这个结果是false
+        //System.out.println(c.contains(u2)); // false
+        // 重写equals方法之后，比较的时候会比较name。
+        System.out.println(c.contains(u2)); // true
+        c.remove(u2);
+        System.out.println(c.size()); // 0
+
+        /*Integer x = new Integer(10000);
+        c.add(x);
+        Integer y = new Integer(10000);
+        System.out.println(c.contains(y)); // true*/
+
+        // 创建集合对象
+        Collection cc = new ArrayList();
+        // 创建字符串对象
+        String s1 = new String("hello");
+        // 加进去。
+        cc.add(s1);
+        // 创建了一个新的字符串对象
+        String s2 = new String("hello");
+        //s1集合中是否包含s2？
+        System.out.println(s1.contains(s2)) ////判断集合中是否存在"hello" true
+        // 删除s2
+        cc.remove(s2); // s1.equals(s2) java认为s1和s2是一样的。删除s2就是删除s1。
+        // 集合中元素个数是？
+        System.out.println(cc.size()); // 0
+    }
+
+    class User{
+        private String name;
+        public User(){}
+        public User(String name){
+            this.name = name;
+    	}
+
+        // 重写equals方法
+        // 将来调用equals方法的时候，一定是调用这个重写的equals方法。
+        // 这个equals方法的比较原理是：只要姓名一样就表示同一个用户。
+        public boolean equals(Object o) {
+        if(o == null || !(o instanceof User)) return false;
+        if(o == this) return true;
+        User u = (User)o;
+        // 如果名字一样表示同一个人。（不再比较对象的内存地址了。比较内容。）
+        return u.name.equals(this.name);
+    }
+```
+
+​		测试：remove方法中的java.util.ConcurrentModificationException异常：
+
+```java
+        // 创建集合
+        Collection c = new ArrayList();
+
+        // 注意：此时获取的迭代器，指向的是那是集合中没有元素状态下的迭代器。
+        // 一定要注意：集合结构只要发生改变，迭代器必须重新获取。
+        // 当集合结构发生了改变，迭代器没有重新获取时，调用next()方法时：
+        //java.util.ConcurrentModificationException
+        Iterator it = c.iterator();
+
+        // 添加元素
+        c.add(1); // Integer类型
+        c.add(2);
+        c.add(3);
+
+        // 获取迭代器
+        //Iterator it = c.iterator();
+        /*while(it.hasNext()){
+        // 编写代码时next()方法返回值类型必须是Object。
+        // Integer i = it.next();
+        Object obj = it.next();
+        System.out.println(obj);
+        }*/
+
+        Collection c2 = new ArrayList();
+        c2.add("abc");
+        c2.add("def");
+        c2.add("xyz");
+
+        Iterator it2 = c2.iterator();
+        while(it2.hasNext()){
+        Object o = it2.next();
+        // 删除元素
+        // 删除元素之后，集合的结构发生了变化，应该重新去获取迭代器
+        // 但是，循环下一次的时候并没有重新获取迭代器，所以会出现异常：java.util.ConcurrentModificationException
+        // 出异常根本原因是：集合中元素删除了，但是没有更新迭代器（迭代器不知道集合变化了）
+        //c2.remove(o); // 直接通过集合去删除元素，没有通知迭代器。（导致迭代器的快照和原集合状态不同。）
+        // 使用迭代器来删除可以吗？
+        // 迭代器去删除时，会自动更新迭代器，并且更新集合（删除集合中的元素）。
+        it2.remove(); // 删除的一定是迭代器指向的当前元素。
+        System.out.println(o);
+        }
+
+        System.out.println(c2.size()); //0
+```
+
+
+
+3、List接口：
+    3.1、**List**集合存储元素特点：**有序可重复**
+        有序：List集合中的元素有下标。
+        从0开始，以1递增。
+        可重复：存储一个1，还可以再存储1.
+    3.2、List既然是Collection接口的子接口，那么肯定List接口有自己“特色”的方法：
+        以下只列出**List接口**特有的**常用**的方法：
+            **在列表的指定位置插入指定元素（第一个参数是下标）**
+
+​				**void add(int index, Object element)这个方法使用不多，因为对于ArrayList集合来说效率比较低**	
+​            **修改指定位置的元素：**
+
+​				**Object set(int index, Object element)**
+
+​			**根据下标获取元素：**
+
+​            	**Object get(int index)**
+
+​			**获取指定对象第一次出现处的索引：**
+
+​            	**int indexOf(Object o)**
+
+​			**获取指定对象最后一次出现处的索引：**
+
+​            	**int lastIndexOf(Object o)**
+
+​			**删除指定下标位置的元素：**
+
+​            	**Object remove(int index)**
+
+
+
+4、ArrayList集合（底层：数组）：
+
+​	4.1、默认初始化容量**10**（底层先创建了一个长度为0的数组，当添加第一个元素的时候，初始化容量10。）
+​	4.2、集合**底层**是一个**Object[]**数组。
+​	4.3、构造方法：
+​    	**new ArrayList();**
+**​    	new ArrayList(20);**
+
+​		**new ArrayList(Collection<? extends E> c)**
+
+​	4.4、ArrayList集合的扩容：
+​    	增长到原容量的**1.5**倍。
+​    	ArrayList集合底层是数组，怎么优化？
+​        	**尽可能少的扩**容。因为数组扩容效率比较低，建议在使用ArrayList集合
+​        	的时候预估计元素的个数，给定一个初始化容量。
+​	4.5、数组优点：
+​    	**检索效率比较高**。（每个元素占用空间大小相同，内存地址是连续的，知道首元素内存地址，
+​    	然后知道下标，通过数学表达式计算出元素的内存地址，所以检索效率最高。）
+​	4.6、数组缺点：
+​    	**随机增删元素效率比较低**。
+​    	另外数组**无法存储大数据量**。（很难找到一块非常巨大的连续的内存空间。）
+​	4.7、向数组**末尾添加元素**，**效率很高**，不受影响。
+​	4.8、面试官经常问的一个问题？
+​    	这么多的集合中，你用哪个集合最多？
+​        	答：ArrayList集合。
+​        	因为往数组末尾添加元素，效率不受影响。
+​        	另外，我们检索/查找某个元素的操作比较多。
+
+​	4.9、**ArrayList**集合是**非线程安全**的。（不是线程安全的集合。）
+
+​	4.10、通过new ArrayList(Collection<? extends E> c)这个构造方法
+
+​				就可以将HashSet集合转换成List集合。
+
+```java
+        // 创建一个HashSet集合
+        Collection c = new HashSet();
+        // 添加元素到Set集合
+        c.add(100);
+        c.add(200);
+        c.add(900);
+        c.add(50);
+
+        List myList3 = new ArrayList(c);
+        for(int i = 0; i < myList3.size(); i++){
+        System.out.println(myList3.get(i));
+        }
+```
+
+
+
+5、增强for循环，或者叫做foreach：
+
+​	5.1、语法：
+​    	for(元素类型 变量名 : 数组或集合){
+​        	System.out.println(变量名);
+​    	}
+
+​	5.2、缺点：**没有下标**。在**需要使用下标**的循环中，**不**建议**使用增强for循环**。
+
+​	5.3、用三种方法遍历集合：
+
+```java
+	// 创建List集合
+    List<String> strList = new ArrayList<>();
+
+    // 添加元素
+    strList.add("hello");
+    strList.add("world!");
+    strList.add("kitty!");
+
+    // 遍历，使用迭代器方式
+    Iterator<String> it = strList.iterator();
+    while(it.hasNext()){
+        String s = it.next();
+        System.out.println(s);
+    }
+
+    // 使用下标方式（只针对于有下标的集合）
+    for(int i = 0; i < strList.size(); i++){
+        System.out.println(strList.get(i));
+    }
+
+    // 使用foreach
+    for(String s : strList){ // 因为泛型使用的是String类型，所以是：String s
+        System.out.println(s);
+    }
+
+    List<Integer> list = new ArrayList<>();
+    list.add(100);
+    list.add(200);
+    list.add(300);
+    for(Integer i : list){ // i代表集合中的元素
+        System.out.println(i);
+    }
+```
+
+
+
+6、自动类型推断机制（又称为钻石表达式）：
+
+​	6.1、JDK8之后引入了：自动类型推断机制。（又称为钻石表达式）
+
+```java
+	List<String> strList = new ArrayList<>();
+
+    strList.add("hello");
+    strList.add("World！");
+    strList.add("kitty!");
+    // 类型不匹配。
+    //strList.add(123);
+
+    // 遍历
+    Iterator<String> it = strList.iterator();
+    while(it.hasNext()){
+        // 如果没有使用泛型
+        /*
+                Object obj = it.next();
+                if(obj instanceof String){
+                    String ss = (String)obj;
+                    ss.substring(2);
+                }
+                 */
+        // 直接通过迭代器获取了String类型的数据
+        String s = it.next();
+        // 直接调用String类的substring方法截取字符串。
+        String newString = s.substring(2);
+        System.out.println(newString);
+    }
+```
+​	6.2、自定义泛型可以吗？可以
+​	自定义泛型的时候，<> 尖括号中的是一个标识符，随便写。
+​	java源代码中经常出现的是：
+​    	<E>和<T>
+​	E是Element单词首字母。
+​	T是Type单词首字母。
+
+
+
+7、LinkedList集合（底层：双向链表）：
+
+​	7.1、链表的优缺点：
+
+​		**链表的优点**：
+​			由于链表上的元素在空间存储上**内存地址不连续**。
+​			所以**随机增删元素**的时候**不会有大量元素位移**，因此**随机增删效率较高**。
+​			在以后的开发中，如果遇到随机增删集合中元素的业务比较多时，建议
+​			使用LinkedList。
+
+​		链表的缺点：
+​    		不能通过数学表达式计算被查找元素的内存地址，每一次查找都是从头
+​    		节点开始遍历，直到找到为止。所以LinkedList集合**检索/查找的效率**
+​    		较**低**。
+
+​		ArrayList：把检索发挥到极致。（末尾添加元素效率还是很高的。）
+​		LinkedList：把随机增删发挥到极致。
+​		加元素都是往末尾添加，所以ArrayList用的比LinkedList多。
+
+​	7.2、注意：**LinkedList集合底层也是有下标的**。
+​    	ArrayList之所以检索效率比较高，**不是单纯因为下标的原因**。是因为底层数组发挥的作用。
+​    	LinkedList集合照样有下标，但是检索/查找某个元素的时候效率比较低，因为只能从头节点开始一个一个遍		历。
+
+​	7.3、**LinkedList**集合有**初始化容量**吗？**没有**。
+​    		 最初这个链表中没有任何元素。first和last引用都是null。
+
+​	7.4、不管是LinkedList还是ArrayList，以后写代码时不需要关心具体是哪个集合。
+​     		因为我们要**面向接口编程**，调用的方法都是接口中的方法。
+
+
+
+8、Vector（底层：数组）：
+
+​	8.1、底层是一个数组。
+​	8.2、**初始化容量**：**10**
+​	8.3、怎么扩容的？
+​    	扩容之后是**原容量的2倍**。
+​    	10--> 20 --> 40 --> 80
+
+​	8.4、ArrayList集合扩容特点：
+​    	ArrayList集合扩容是原容量1.5倍。
+
+​	8.5、Vector中所有的方法都是**线程同步**的，都带有synchronized关键字，
+​	是线程安全的。**效率比较低**，使用较少了。
+
+​	8.6、怎么将一个线程不安全的ArrayList集合转换成线程安全的呢？
+​    	使用集合工具类：
+​        	java.util.Collections;
+
+​        	java.util.Collection 是集合接口。
+​        	java.util.Collections 是集合工具类。
+
+```java
+    List myList = new ArrayList(); // 非线程安全的。
+    // 变成线程安全的
+    Collections.synchronizedList(myList);
+```
+
+
+
+9、**HashSe**t集合（底层：new了一个HashMap（哈希表））：
+    9.1、**无序不可重复**。
+
+​	9.2、放到HashSet集合中的元素实际上是放到****HashMap集合的key部分了**
+
+​	**9.3、HashMap的key，存储在**HashMap集合**key**的元素需要**同时重写hashCode + equals**
+
+
+
+10、TreeSet集合（底层：TreeMap（二叉树））：
+
+​	10.1、TreeSet集合存储元素特点：**从小到大自动排序**！
+
+​	10.2、TreeSet集合底层实际上是一个**TreeMap**
+
+​	10.3、TreeMap集合底层是一个二叉树。
+​	10.4、放到**TreeSet集合中的元素**，等同于**放到TreeMap集合key部分**了。
+​	10.5、TreeSet集合中的元素：无序不可重复，但是可以按照元素的大小顺序自动排序。
+​		  称为：可排序集合。
+
+​	10.6、对**自定义**的类型来说，TreeSet可以排序吗？
+​	以下程序中对于Person类型来说，**无法排序**。因为**没有指定**Person对象之间的**比较规则**。
+​	谁大谁小并没有说明啊。
+
+​	以下程序运行的时候出现了这个异常：
+​    	java.lang.ClassCastException:
+​        	class com.bjpowernode.javase.collection.Person
+​        	cannot be cast to class java.lang.Comparable
+​	出现这个异常的原因是：
+​    	Person类没有实现java.lang.Comparable接口。
+
+```java
+public class TreeSetTest {
+    public static void main(String[] args) {
+        Person p1 = new Person(32);
+        //System.out.println(p1);
+        Person p2 = new Person(20);
+        Person p3 = new Person(30);
+        Person p4 = new Person(25);
+
+        // 创建TreeSet集合
+        TreeSet<Person> persons = new TreeSet<>();
+        // 添加元素
+        persons.add(p1);
+        persons.add(p2);
+        persons.add(p3);
+        persons.add(p4);
+
+        // 遍历
+        for (Person p : persons){
+            System.out.println(p);
+        }
+    }
+}
+
+class Person {
+    int age;
+    public Person(int age){
+        this.age = age;
+    }
+
+    // 重写toString()方法
+    public String toString(){
+        return "Person[age="+age+"]";
+    }
+}
+```
+
+​	10.6、**放在TreeSet集合中的元素需要实现java.lang.Comparable接口**。
+
+​		并且实现compareTo方法。equals可以不写。
+
+​		需要在compareTo方法中编写比较的逻辑，或者说比较的规则，按照什么进行比较！
+​		k.compareTo(t.key)
+​		拿着参数k和集合中的每一个k进行比较，返回值可能是>0 <0 =0
+​		比较规则最终还是由程序员指定的：例如按照年龄升序。或者按照年龄降序。
+
+​		compareTo方法的返回值很重要：
+​    	返回0表示相同，value会覆盖。
+​    	返回>0，会继续在右子树上找。【10 - 9 = 1 ，1 > 0的说明左边这个数字比较大。所以在右子树上找。】
+​    	返回<0，会继续在左子树上找。
+
+​	TreeSet集合中元素可排序的第二种方式：**使用比较器的方式**。
+
+​	**比较器实现java.util.Comparator接口**。（Comparable是java.lang包下的。Comparator是java.util包下）
+
+​	在比较器中编写比较的逻辑，通过构造方法传递进去。
+
+```java
+	//创建TreeSet集合的时候，需要使用这个比较器
+	// 给构造方法传递一个比较器。
+	TreeSet<WuGui> wuGuis = new TreeSet<>(new WuGuiComparator());
+
+	// 单独在这里编写一个比较器
+	class WuGuiComparator implements Comparator<WuGui> {
+
+    	@Override
+    	public int compare(WuGui o1, WuGui o2) {
+        	// 指定比较规则
+        	// 按照年龄排序
+        	return o1.age - o2.age;
+    	}
+    }
+
+	//也可以使用匿名内部类的方式（这个类没有名字。直接new接口。）
+        	TreeSet<WuGui> wuGuis = new TreeSet<>(new Comparator<WuGui>() {
+            	@Override
+            	public int compare(WuGui o1, WuGui o2) {
+                	return o1.age - o2.age;
+            	}
+        	});
+```
+
+​	最终的结论：
+​    	放到TreeSet或者TreeMap集合key部分的元素要想做到排序,包括两种方式：
+​        	第一种：放在集合中的元素实现java.lang.Comparable接口。
+​        	第二种：在构造TreeSet或者TreeMap集合的时候给它传一个比较器对象。
+​	Comparable和Comparator怎么选择呢？
+​    	当**比较规则不会发生改变**的时候，或者说当**比较规则只有1个**的时候，建议实现**Comparable接口**。
+​    	如果**比较规则有多个**，并且需要多个比较规则之间**频繁切换**，建议使用**Comparator接口**。
+
+​	**Comparator接口的设计符合OCP原则**。
+
+
+
+11、HashMap集合（底层：哈希表/散列表）：
+
+​	11.1、**HashMap**集合底层是**哈希表/散列表**的数据结构。
+​	11.2、哈希表是一个怎样的数据结构呢？
+​    	哈希表是一个**数组和单向链表的结合体**。
+​    	数组：在查询方面效率很高，随机增删方面效率很低。
+​    	单向链表：在随机增删方面效率较高，在查询方面效率很低。
+​    	哈希表将以上的两种数据结构融合在一起，充分发挥它们各自的优点。
+​	11.3、HashMap集合底层的源代码：
+​    	public class HashMap{
+​        	// **HashMap底层实际上就是一个数组。（一维数组）**
+​        	**Node**<K,V>[] table;
+​        	// 静态的内部类HashMap.Node
+​        	static class Node<K,V> {
+​            	final int hash; // 哈希值（哈希值是key的hashCode()方法的执行结果。hash值通过哈希函数/算法，可															以转换存储成数组的下标。）
+​            	final K key; // 存储到Map集合中的那个key
+​            	V value; // 存储到Map集合中的那个value
+​            	Node<K,V> next; // 下一个节点的内存地址。
+​        	}
+​    	}
+​    	哈希表/散列表：一维数组，这个数组中每一个元素是一个单向链表。（数组和链表的结合体。）
+​	11.4、最主要掌握的是：
+​    	**map.put(k,v)**
+​    	**v = map.get(k)**
+​    	以上这两个方法的**实现原理**，是必须掌握的。
+​	11.5、HashMap集合的key部分特点：
+​    	**无序，不可重复**。
+​    	为什么无序？ 因为不一定挂到哪个单向链表上。
+​    	不可重复是怎么保证的？ equals方法来保证HashMap集合的key不可重复。
+​    	如果key重复了，value会覆盖。
+
+​    	放在HashMap集合key部分的元素其实就是放到HashSet集合中了。
+​    	所以HashSet集合中的元素也需要同时重写hashCode()+equals()方法。
+
+​	11.6、**哈希表HashMap使用不当时无法发挥性能**！
+​    	假设将所有的hashCode()方法返回值固定为某个值，那么会导致底层哈希表变成了
+​    	纯单向链表。这种情况我们成为：散列分布不均匀。
+​    	什么是散列分布均匀？
+​        	假设有100个元素，10个单向链表，那么每个单向链表上有10个节点，这是最好的，
+​        	是散列分布均匀的。
+​    	假设将所有的hashCode()方法返回值都设定为不一样的值，可以吗，有什么问题？
+​        	不行，因为这样的话导致底层哈希表就成为一维数组了，没有链表的概念了。
+​        	也是散列分布不均匀。
+​    	散列分布均匀需要你重写hashCode()方法时有一定的技巧。
+​	11.7、重点：放在HashMap集合key部分的元素，以及放在HashSet集合中的元素，**需要同时重写hashCode和	equals方法**。
+​	11.8、HashMap集合的**默认初始化容量是16**，**默认加载因子是0.75**
+​    这个默认加载因子是当HashMap集合底层数组的**容量达到75%的时候，数组开始扩容**。
+
+​    重点，记住：**HashMap集合初始化容量必须是2的倍数**，这也是官方推荐的，
+​    这是因为**达到散列均匀**，为了**提高HashMap集合的存取效率**，所必须的。
+
+​	11.9、遍历Map集合：
+​    	Set<Map.Entry<Integer,String>> set = map.entrySet();
+​    	for(Map.Entry<Integer,String> entry : set){
+​        	System.out.println(entry.getKey() + "=" + entry.getValue());
+​    	}
+
+​	11.10、向Map集合中存，以及从Map集合中取，都是**先调用key的hashCode方法，然后再调用equals方法**！
+​	**equals方法有可能调用，也有可能不调用**。
+​    	拿put(k,v)举例，什么时候equals不会调用？
+​        	k.hashCode()方法返回哈希值，
+​        	哈希值经过哈希算法转换成数组下标。
+​        	数组下标位置上如果是null，equals不需要执行。
+​    	拿get(k)举例，什么时候equals不会调用？
+​        	k.hashCode()方法返回哈希值，
+​        	哈希值经过哈希算法转换成数组下标。
+​        	数组下标位置上如果是null，equals不需要执行。
+
+​	11.11、注意：如果**一个类的equals方法重写了，那么hashCode()方法必须重写**。
+​	并且equals方法返回如果是true，hashCode()方法返回的值必须一样。
+​    equals方法返回true表示两个对象相同，在同一个单向链表上比较。
+​    那么对于同一个单向链表上的节点来说，他们的哈希值都是相同的。
+​    所以hashCode()方法的返回值也应该相同。
+
+​	11.12、hashCode()方法和equals()方法不用研究了，**直接使用IDEA工具生成**，但是这两个方法需要**同时生成**。
+
+​	11.13、终极结论：
+​    放在HashMap集合key部分的，以及放在HashSet集合中的元素，需要同时重写hashCode方法和equals方法。
+
+​	11.14、对于哈希表数据结构来说：
+​    如果o1和o2的hash值相同，一定是放到同一个单向链表上。
+​    当然如果o1和o2的hash值不同，但由于哈希算法(存在求余运算)执行结束之后转换的数组下标可能相同，此时	会发生“**哈希碰撞**”。
+
+​	11.5、**HashMap集合key部分允许null**吗？	允许
+​	但是要注意：HashMap集合的key null值只能有一个（value会覆盖）。
+​	有可能面试的时候遇到这样的问题。
+
+
+
+12、Hashtable集合（底层：哈希表）：
+
+​	12.1、Hashtable的key可以为null吗？
+​    		**Hashtable的key和value都是不能为null的**。
+​    		HashMap集合的key和value都是可以为null的。
+
+​	12.2、**Hashtable**方法都带有synchronized：**线程安全**的。
+​		线程安全有其它的方案，这个Hashtable对线程的处理
+​		导致**效率较低**，使用较少了。
+
+12.3、Hashtable和HashMap一样，底层都是哈希表数据结构。
+		Hashtable的**初始化容量是11**，**默认加载因子是：0.75f**
+		Hashtable的扩容是：**原容量 * 2 + 1**
+
+
+
+13、Map接口：
+    13.1、**Map和Collection没有继承关系**。
+    13.2、Map集合以key和value的方式存储数据：**键值对**
+        key和value都是**引用数据类型**。
+        key和value都是**存储对象的内存地址**。
+        **key起到主导的地位，value是key的一个附属品**。
+    13.3、Map接口中**常用方法**：
+        **V put(**K key, V value) 向Map集合中添加键值对**
+        **V get(Object key) 通过key获取value**
+        **void clear()    清空Map集合**
+        **boolean containsKey(Object key) 判断Map中是否包含某个key**
+        **boolean containsValue(Object value) 判断Map中是否包含某个value**
+        **boolean isEmpty()   判断Map集合中元素个数是否为0**
+        **V remove(Object key) 通过key删除键值对**
+        **int size() 获取Map集合中键值对的个数。**
+        **Collection<V> values() 获取Map集合中所有的value，返回一个Collection**
+
+​    	**Set<K> keySet() 获取Map集合所有的key（所有的键是一个set集合）**
+
+​    	Set<Map.Entry<K,V>> entrySet()
+​        将Map集合转换成Set集合
+​        假设现在有一个Map集合，如下所示：
+​            map1集合对象
+
+| key  |  value   |
+| :--: | :------: |
+|  1   | zhangsan |
+|  2   |   lisi   |
+|  3   |  wangwu  |
+|  4   | zhaoliu  |
+
+​            Set set = map1.entrySet();
+​            set集合对象
+​            1=zhangsan 【注意：Map集合通过entrySet()方法转换成的这个Set集合，Set集合中元素的类型是 									Map.Entry<K,V>】
+​            2=lisi     【Map.Entry和String一样，都是一种类型的名字，只不过：Map.Entry是静态内部类，是Map中							的静态内部类】
+​            3=wangwu
+​            4=zhaoliu ---> 这个东西是个什么？Map.Entry
+
+​			测试：
+
+```java
+		// 创建Map集合对象
+        Map<Integer, String> map = new HashMap<>();
+        // 向Map集合中添加键值对
+        map.put(1, "zhangsan"); // 1在这里进行了自动装箱。
+        map.put(2, "lisi");
+        map.put(3, "wangwu");
+        map.put(4, "zhaoliu");
+        // 通过key获取value
+        String value = map.get(2);
+        System.out.println(value);
+        // 获取键值对的数量
+        System.out.println("键值对的数量：" + map.size());
+        // 通过key删除key-value
+        map.remove(2);
+        System.out.println("键值对的数量：" + map.size());
+        // 判断是否包含某个key
+        // contains方法底层调用的都是equals进行比对的，所以自定义的类型需要重写equals方法。
+        System.out.println(map.containsKey(new Integer(4))); // true
+        // 判断是否包含某个value
+        System.out.println(map.containsValue(new String("wangwu"))); // true
+
+        // 获取所有的value
+        Collection<String> values = map.values();
+        // foreach
+        for(String s : values){
+            System.out.println(s);
+        }
+
+        // 清空map集合
+        map.clear();
+        System.out.println("键值对的数量：" + map.size());
+        // 判断是否为空
+        System.out.println(map.isEmpty()); // true
+```
+
+​	13.4、Map集合的遍历【非常重要】：
+
+```java
+    // 第一种方式：获取所有的key，通过遍历key，来遍历value
+    Map<Integer, String> map = new HashMap<>();
+    map.put(1, "zhangsan");
+    map.put(2, "lisi");
+    map.put(3, "wangwu");
+    map.put(4, "zhaoliu");
+    // 遍历Map集合
+    // 获取所有的key，所有的key是一个Set集合
+    Set<Integer> keys = map.keySet();
+    // 遍历key，通过key获取value
+    // 迭代器可以
+    /*Iterator<Integer> it = keys.iterator();
+    while(it.hasNext()){
+    // 取出其中一个key
+    Integer key = it.next();
+    // 通过key获取value
+    String value = map.get(key);
+    System.out.println(key + "=" + value);
+    }*/
+    // foreach也可以
+    for(Integer key : keys){
+    System.out.println(key + "=" + map.get(key));
+    }
+
+    // 第二种方式：Set<Map.Entry<K,V>> entrySet()
+    // 以上这个方法是把Map集合直接全部转换成Set集合。
+    // Set集合中元素的类型是：Map.Entry
+    Set<Map.Entry<Integer,String>> set = map.entrySet();
+    // 遍历Set集合，每一次取出一个Node
+    // 迭代器
+    /*Iterator<Map.Entry<Integer,String>> it2 = set.iterator();
+    while(it2.hasNext()){
+    Map.Entry<Integer,String> node = it2.next();
+    Integer key = node.getKey();
+    String value = node.getValue();
+    System.out.println(key + "=" + value);
+    }*/
+
+    // foreach
+    // 这种方式效率比较高，因为获取key和value都是直接从node对象中获取的属性值。
+    // 这种方式比较适合于大数据量。
+    for(Map.Entry<Integer,String> node : set){
+    System.out.println(node.getKey() + "--->" + node.getValue());
+    }
+```
+
+
+
+14、Properties集合（Map集合）：
+
+​	目前只需要掌握Properties属性类对象的相关方法即可。
+​	14.1、Properties是一个**Map集合**，**继承Hashtable**，**Properties的key和value都是String类型**。
+​	14.2、Properties被称为**属性类对象**。
+​	14.3、Properties是**线程安全**的。
+
+```java
+    // 创建一个Properties对象
+    Properties pro = new Properties();
+
+    // 需要掌握Properties的两个方法，一个存，一个取。
+    pro.setProperty("url", "jdbc:mysql://localhost:3306/bjpowernode");
+    pro.setProperty("driver","com.mysql.jdbc.Driver");
+    pro.setProperty("username", "root");
+    pro.setProperty("password", "123");
+
+    // 通过key获取value
+    String url = pro.getProperty("url");
+    String driver = pro.getProperty("driver");
+    String username = pro.getProperty("username");
+    String password = pro.getProperty("password");
+
+    System.out.println(url);
+    System.out.println(driver);
+    System.out.println(username);
+    System.out.println(password);
+```
+
+
+
+15、大总结：
+
+集合这块最主要掌握什么内容？
+	1、每个集合对象的创建（new）
+	2、向集合中添加元素
+	3、从集合中取出某个元素
+	4、遍历集合
+	5、主要的集合类：
+		ArrayList
+		LinkedList
+		HashSet (HashMap的key，存储在HashMap集合key的元素需要同时重写hashCode + equals)
+		TreeSet
+		HashMap
+		Properties
+		TreeMap
+
+1、ArrayList：
+
+```java
+    // 创建集合对象
+    //ArrayList<String> list = new ArrayList<>();
+    LinkedList<String> list = new LinkedList<>();
+    // 添加元素
+    list.add("zhangsan");
+    list.add("lisi");
+    list.add("wangwu");
+    // 从集合中取出某个元素
+    // List集合有下标
+    String firstElt = list.get(0);
+    System.out.println(firstElt);
+    // 遍历（下标方式）
+    for(int i = 0; i < list.size(); i++){
+    String elt = list.get(i);
+    System.out.println(elt);
+    }
+    // 遍历（迭代器方式，这个是通用的，所有Collection都能用）
+    Iterator<String> it = list.iterator();
+    while(it.hasNext()){
+    System.out.println(it.next());
+    }
+
+    // while循环修改为for循环
+    /*for(Iterator<String> it2 = list.iterator(); it2.hasNext(); ){
+    System.out.println("====>" + it2.next());
+    }*/
+
+    // 遍历（foreach方式）
+    for(String s : list){
+    System.out.println(s);
+    }
+```
+
+2、HashSet：
+
+```java
+public class HashSetTest {
+    public static void main(String[] args) {
+        // 创建集合对象
+        HashSet<String> set = new HashSet<>();
+
+        // 添加元素
+        set.add("abc");
+        set.add("def");
+        set.add("king");
+
+        // set集合中的元素不能通过下标取了。没有下标
+        // 遍历集合（迭代器）
+        Iterator<String> it = set.iterator();
+        while(it.hasNext()){
+            System.out.println(it.next());
+        }
+
+        // 遍历集合（foreach）
+        for(String s : set){
+            System.out.println(s);
+        }
+
+        set.add("king");
+        set.add("king");
+        set.add("king");
+        System.out.println(set.size()); //3 （后面3个king都没有加进去。）
+
+        set.add("1");
+        set.add("10");
+        set.add("2");
+
+        for(String s : set){
+            System.out.println("--->" + s);
+        }
+
+        // 创建Set集合，存储Student数据
+        Set<Student> students = new HashSet<>();
+
+        Student s1 = new Student(111, "zhangsan");
+        Student s2 = new Student(222, "lisi");
+        Student s3 = new Student(111, "zhangsan");
+
+        students.add(s1);
+        students.add(s2);
+        students.add(s3);
+
+        System.out.println(students.size()); // 2
+
+        // 遍历
+        for(Student stu : students){
+            System.out.println(stu);
+        }
+
+    }
+}
+
+class Student {
+    int no;
+    String name;
+
+    public Student() {
+    }
+
+    public Student(int no, String name) {
+        this.no = no;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "no=" + no +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return no == student.no &&
+                Objects.equals(name, student.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(no, name);
+    }
+}
+```
+
+3、TreeSet：
+
+```java
+/*
+    1.1、每个集合对象的创建（new）
+	1.2、向集合中添加元素
+	1.3、从集合中取出某个元素
+	1.4、遍历集合
+	1.5、测试TreeSet集合中的元素是可排序的。
+	1.6、测试TreeSet集合中存储的类型是自定义的。
+	1.7、测试实现Comparable接口的方式
+	1.8、测试实现Comparator接口的方式（最好测试以下匿名内部类的方式）
+ */
+ public class TreeSetTest {
+    public static void main(String[] args) {
+        // 集合的创建（可以测试以下TreeSet集合中存储String、Integer的。这些类都是SUN写好的。）
+        //TreeSet<Integer> ts = new TreeSet<>();
+
+        // 编写比较器可以改变规则。
+        TreeSet<Integer> ts = new TreeSet<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2 - o1; // 自动拆箱
+            }
+        });
+
+        // 添加元素
+        ts.add(1);
+        ts.add(100);
+        ts.add(10);
+        ts.add(10);
+        ts.add(10);
+        ts.add(10);
+        ts.add(0);
+
+        // 遍历（迭代器方式）
+        Iterator<Integer> it = ts.iterator();
+        while(it.hasNext()) {
+            Integer i = it.next();
+            System.out.println(i);
+        }
+
+        // 遍历（foreach）
+        for(Integer x : ts){
+            System.out.println(x);
+        }
+
+        // TreeSet集合中存储自定义类型
+        TreeSet<A> atree = new TreeSet<>();
+
+        atree.add(new A(100));
+        atree.add(new A(200));
+        atree.add(new A(500));
+        atree.add(new A(300));
+        atree.add(new A(400));
+        atree.add(new A(1000));
+
+        // 遍历
+        for(A a : atree){
+            System.out.println(a);
+        }
+
+        //TreeSet<B> btree = new TreeSet<>(new BComparator());
+        // 匿名内部类方式。
+        TreeSet<B> btree = new TreeSet<>(new Comparator<B>() {
+            @Override
+            public int compare(B o1, B o2) {
+                return o1.i - o2.i;
+            }
+        });
+
+        btree.add(new B(500));
+        btree.add(new B(100));
+        btree.add(new B(200));
+        btree.add(new B(600));
+        btree.add(new B(300));
+        btree.add(new B(50));
+
+        for(B b : btree){
+            System.out.println(b);
+        }
+    }
+}
+
+// 第一种方式：实现Comparable接口
+class A implements Comparable<A>{
+    int i;
+
+    public A(int i){
+        this.i = i;
+    }
+
+    @Override
+    public String toString() {
+        return "A{" +
+                "i=" + i +
+                '}';
+    }
+
+    @Override
+    public int compareTo(A o) {
+        //return this.i - o.i;
+        return o.i - this.i;
+    }
+}
+
+class B {
+    int i;
+    public B(int i){
+        this.i = i;
+    }
+
+    @Override
+    public String toString() {
+        return "B{" +
+                "i=" + i +
+                '}';
+    }
+}
+
+// 比较器
+class BComparator implements Comparator<B> {
+
+    @Override
+    public int compare(B o1, B o2) {
+        return o1.i - o2.i;
+    }
+}
+```
+
+4、HashMap：
+
+```java
+    // 创建Map集合
+    Map<Integer, String> map = new HashMap<>();
+    // 添加元素
+    map.put(1, "zhangsan");
+    map.put(9, "lisi");
+    map.put(10, "wangwu");
+    map.put(2, "king");
+    map.put(2, "simth"); // key重复value会覆盖。
+    // 获取元素个数
+    System.out.println(map.size());
+    // 取key是2的元素
+    System.out.println(map.get(2)); // smith
+    // 遍历Map集合很重要，几种方式都要会。
+    // 第一种方式：先获取所有的key，遍历key的时候，通过key获取value
+    Set<Integer> keys = map.keySet();
+    for(Integer key : keys){
+    System.out.println(key + "=" + map.get(key));
+    }
+
+    // 第二种方式：是将Map集合转换成Set集合，Set集合中每一个元素是Node
+    // 这个Node节点中有key和value
+    Set<Map.Entry<Integer,String>> nodes = map.entrySet();
+    for(Map.Entry<Integer,String> node : nodes){
+    System.out.println(node.getKey() + "=" + node.getValue());
+    }
+```
+
+5、Properties：
+
+```java
+    // 创建对象
+    Properties pro = new Properties();
+    // 存
+    pro.setProperty("username", "test");
+    pro.setProperty("password", "test123");
+    // 取
+    String username = pro.getProperty("username");
+    String password = pro.getProperty("password");
+    System.out.println(username);
+    System.out.println(password);
+```
+
+​	15.1、List接口中的常用方法。
+​		List是Collection接口的子接口。所以List接口中有一些特有的方法。
+​			void add(int index, Object element)
+​			Object set(int index, Object element)
+​			Object get(int index)
+​			int indexOf(Object o)
+​			int lastIndexOf(Object o)
+​			Object remove(int index)
+​	15.2、迭代器迭代元素的过程中不能使用集合对象的remove方法删除元素，
+​	要使用迭代器Iterator的remove方法来删除元素，防止出现异常：
+​		ConcurrentModificationException
+
+​	15.3、ArrayList
+​		ArrayList集合初始化容量10
+​		扩容为原容量1.5倍。
+​		底层是数组。
+
+​		数组优点和缺点要能够说出来！
+​		另外要注意：ArrayList集合末尾增删元素效率还是可以的。
+
+​	15.4、链表数据结构
+​		第一：单向链表和双向链表数据结构要理解。
+​		第二：链表数据结构的优点和缺点要能够说出来。
+
+​	15.5、Vector：
+​		Vector初始化容量是10.
+​		扩容为原容量的2倍。
+​		底层是数组。
+​		Vector底层是线程安全的。
+
+​		怎么得到一个线程安全的List：
+​			Collections.synchronizedList(list);
+
+​	15.6、JDK5.0新特性：泛型
+​		第一：集合使用泛型来减少向下转型的操作。
+​		第二：怎么使用泛型？
+​		第三：怎么自定义泛型？
+
+​	15.7、JDK5.0新特性：
+​		foreach
+​		对数组怎么遍历？
+​			for(int i : arr){
+​				System.out.println(i);
+​			}
+​		对集合怎么遍历？
+​			for(String s : list){
+​				System.out.println(s);
+​			}
+
+​	15.8、JDK8新特性：钻石表达式
+​		List<String> list = new ArrayList<>();
+​		类型自动推断！
+
+​	15.9、掌握Map接口中常用方法:
+
+​	15.10、遍历Map集合的两种方式都要精通。
+​		第一种：获取所有key，遍历每个key，通过key获取value.
+​		第二种：获取Set<Map.Entry>即可，遍历Set集合中的Entry
+​			调用entry.getKey() entry.getValue()
+
+​	15.11、了解哈希表数据结构。
+
+​	15.12、存放在HashMap集合key部分和HashSet集合中的元素需要同时重写hashCode和equals。
+
+​	15.13、HashMap和Hashtable的区别。
+​		HashMap：
+​			初始化容量16，扩容2倍。
+​			非线程安全
+​			key和value可以为null。
+
+​		Hashtable
+​			初始化容量11，扩容2倍+1
+​			线程安全
+​			key和value都不能是null。
+
+15.14、Properties类的常用两个方法。
+		setProperty
+		getProperty
+
+15.15、了解自平衡二叉树数据结构。
+		左小右大原则存储。
+		中序遍历方式。
+
+15.16、TreeMap的key或者TreeSet集合中的元素要想排序，有两种实现方式：
+		第一种：实现java.lang.Comparable接口。
+		第二种：单独编写一个比较器Comparator接口。
+
+15.17、集合工具类Collections:
+		synchronizedList方法
+		sort方法（要求集合中元素实现Comparable接口。）
+
+15.18、计算机英语：
+    增删改查这几个单词要知道：
+        增：add、save、new
+        删：delete、drop、remove
+        改：update、set、modify
+        查：find、get、query、select
+
+------
+
